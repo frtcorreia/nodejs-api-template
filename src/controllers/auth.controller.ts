@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { generateToken } from "../helpers/tokenGenerator";
-import { sendEmail } from "../middleware/email.middleware";
 import prisma from "../helpers/prismaClient";
+import { sendEmail } from "../services/email.service";
 
 // Register user
 export const register = async (req: Request, res: Response) => {
