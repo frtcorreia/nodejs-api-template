@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { check } from "express-validator";
 import {
   activateUser,
   forgotPassword,
@@ -9,10 +10,22 @@ import {
 
 const router = Router();
 
-router.post("/register", register);
-router.post("/login", login);
-router.post("/activate", activateUser);
-router.post("/forgot-password", forgotPassword);
-router.post("/reset-password", resetPassword);
+router.post(
+  "/register",
+  [check("email").isEmail(), check("password").isLength({ min: 6 })],
+  register
+);
+router.post(
+  "/login",
+  [check("email").isEmail(), check("password").isLength({ min: 6 })],
+  login
+);
+router.post("/activate", [check("email").isEmail()], activateUser);
+router.post("/forgot-password", [check("email").isEmail()], forgotPassword);
+router.post(
+  "/reset-password",
+  [check("email").isEmail(), check("newPassword").isLength({ min: 6 })],
+  resetPassword
+);
 
 export default router;

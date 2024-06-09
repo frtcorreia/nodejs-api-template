@@ -17,7 +17,7 @@ This is a starter template for building an API using Node.js with TypeScript. It
 
    ```bash
    git clone https://github.com/frtcorreia/nodejs-api-template
-   cd api-starter-template
+   cd nodejs-api-example
    ```
 
 2. Install the dependencies:

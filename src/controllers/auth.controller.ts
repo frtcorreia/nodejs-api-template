@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { validationResult } from "express-validator";
 import { generateToken } from "../helpers/tokenGenerator";
 import prisma from "../helpers/prismaClient";
 import { sendEmail } from "../services/email.service";
@@ -11,6 +12,11 @@ export const register = async (req: Request, res: Response) => {
   const activationToken = generateToken();
   const activationExpires = new Date(Date.now() + 3600000);
   const hashedPassword = await bcrypt.hash(password, 10);
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
 
   try {
     const user = await prisma.user.create({
@@ -40,6 +46,11 @@ export const register = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) return res.status(404).json({ error: "User not found" });
 
@@ -56,6 +67,11 @@ export const login = async (req: Request, res: Response) => {
 // Activate user
 export const activateUser = async (req: Request, res: Response) => {
   const { email, token } = req.body;
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
 
   try {
     const user = await prisma.user.findFirst({
@@ -94,6 +110,12 @@ export const activateUser = async (req: Request, res: Response) => {
 // Forgot password
 export const forgotPassword = async (req: Request, res: Response) => {
   const { email } = req.body;
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   try {
     const user = await prisma.user.findUnique({ where: { email } });
 
@@ -128,7 +150,12 @@ export const forgotPassword = async (req: Request, res: Response) => {
 // Reset password
 export const resetPassword = async (req: Request, res: Response) => {
   const { email, token, newPassword } = req.body;
-  console.log(email, token, newPassword);
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   try {
     if (!email || !token || !newPassword) {
       return res.status(400).json({ error: "Missing data" });
